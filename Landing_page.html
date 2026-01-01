@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labiba & Tanvir's Wedding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #b08d57;
+            --accent-color: #d4af37;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('LT LP.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            animation: fadeIn 2s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .initials-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 5px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background-color: transparent;
+            background-image: url('LT.png');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .initials-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .initials-button:active {
+            transform: scale(0.98);
+        }
+        
+        .button-text {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-top: 10px;
+            font-weight: 500;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* Audio element (hidden) */
+        #starterAudio {
+            display: none;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .initials-button {
+                width: 150px;
+                height: 150px;
+            }
+            .button-text {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .initials-button {
+                width: 130px;
+                height: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hidden audio element for starting music -->
+    <audio id="starterAudio">
+        <source src="Canon D.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div class="container">
+        <!-- The round button with initials image -->
+        <div class="initials-button" id="startButton"></div>
+        <div class="button-text">Click to begin the celebration</div>
+    </div>
+
+    <script>
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('startButton');
+            const starterAudio = document.getElementById('starterAudio');
+            
+            // Button click handler - no delay, no music sign
+            startButton.addEventListener('click', function() {
+                // Start music instantly
+                try {
+                    starterAudio.volume = 0.25; // Set volume to 25%
+                    starterAudio.play();
+                    
+                    // Add visual feedback (quick scale effect)
+                    startButton.style.transform = 'scale(0.95)';
+                    
+                    // Redirect immediately (no delay)
+                    window.location.href = 'index.html';
+                    
+                } catch (error) {
+                    console.log("Error starting audio:", error);
+                    // If audio fails, still redirect immediately
+                    window.location.href = 'index.html';
+                }
+            });
+            
+            // Add hover effect
+            startButton.addEventListener('mouseover', function() {
+                startButton.style.transform = 'scale(1.05)';
+            });
+            
+            startButton.addEventListener('mouseout', function() {
+                startButton.style.transform = 'scale(1)';
+            });
+            
+            // Also allow pressing Enter key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    startButton.click();
+                }
+            });
+            
+            // Touch device optimization
+            startButton.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                startButton.style.transform = 'scale(0.95)';
+            }, { passive: false });
+            
+            startButton.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                startButton.click();
+            }, { passive: false });
+            
+            // Also support spacebar
+            document.addEventListener('keydown', function(e) {
+                if (e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    startButton.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
