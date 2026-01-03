@@ -508,34 +508,6 @@
             box-shadow: 0 10px 25px rgba(176, 141, 87, 0.3);
         }
         
-        /* Music Toggle */
-        .music-toggle {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            min-width: 44px;
-            min-height: 44px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            font-size: 1.4rem;
-            transition: all 0.3s ease;
-            touch-action: manipulation;
-        }
-        
-        .music-toggle:hover {
-            background-color: var(--accent-color);
-            transform: scale(1.1);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-        }
         
         /* Responsive Styles */
         @media (max-width: 992px) {
@@ -751,14 +723,6 @@
             .countdown-label {
                 font-size: 0.85rem;
                 margin-top: 8px;
-            }
-            
-            .music-toggle {
-                bottom: 15px;
-                left: 15px;
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
             }
             
             .thank-you-message {
@@ -1021,14 +985,7 @@
                 font-size: 0.75rem;
                 margin-top: 6px;
             }
-            
-            .music-toggle {
-                bottom: 12px;
-                left: 12px;
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-            }
+        
             
             .thank-you-message {
                 padding: 25px 15px;
@@ -1167,12 +1124,6 @@
                 font-size: 0.7rem;
             }
             
-            .music-toggle {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-            }
-            
             /* Quran Quote Page Responsive */
             .arabic-text {
                 font-size: 1.1rem;
@@ -1210,13 +1161,9 @@
     </style>
 </head>
 <body>
-    <!-- Music Toggle -->
-    <div class="music-toggle" id="musicToggle">
-        <i class="fas fa-music"></i>
-    </div>
     
     <!-- Audio Element -->
-    <audio id="weddingAudio" loop autoplay>
+    <audio id="weddingAudio" loop>
         <source src="Canon D.mp3" type="audio/mpeg">
     </audio>
     
@@ -1418,7 +1365,7 @@
             updateCountdown();
             setInterval(updateCountdown, 1000);
             
-            // Initialize music with autoplay
+            // Initialize music with autoplay from localStorage flag
             initMusic();
         });
         
@@ -1447,68 +1394,48 @@
             document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
         }
         
-        // Initialize music with autoplay
+        // Initialize music with autoplay from localStorage flag
         function initMusic() {
-            const musicToggle = document.getElementById('musicToggle');
             const weddingAudio = document.getElementById('weddingAudio');
-            let isPlaying = false;
             
-            // Try to autoplay immediately
-            try {
-                weddingAudio.volume = 0.25; // Set volume to 25%
-                const playPromise = weddingAudio.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        // Autoplay started successfully
-                        isPlaying = true;
-                        musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
-                        musicToggle.style.backgroundColor = 'var(--accent-color)';
+            // Check if we should play music (set from index.html)
+            const shouldPlayMusic = localStorage.getItem('shouldPlayMusic');
+            
+            if (shouldPlayMusic === 'true') {
+                try {
+                    weddingAudio.volume = 0.25; // Set volume to 25%
+                    weddingAudio.play().then(() => {
+                        console.log("Music started automatically from index page");
+                        // Clear the flag after successful play
+                        localStorage.removeItem('shouldPlayMusic');
                     }).catch(error => {
-                        // Autoplay was prevented, wait for user interaction
-                        console.log("Autoplay prevented, waiting for user interaction");
+                        console.log("Auto-play prevented:", error);
+                        // If auto-play is blocked, set up user interaction
                         setupUserInteractionAudio();
                     });
+                } catch (error) {
+                    console.log("Audio play error:", error);
+                    setupUserInteractionAudio();
                 }
-            } catch (error) {
-                console.log("Audio initialization error:", error);
+            } else {
+                // If no flag, set up user interaction to start audio
                 setupUserInteractionAudio();
             }
             
             function setupUserInteractionAudio() {
                 // Set up click event to start audio on first user interaction
                 document.addEventListener('click', function initAudio() {
-                    if (!isPlaying) {
-                        weddingAudio.volume = 0.25;
-                        weddingAudio.play().then(() => {
-                            isPlaying = true;
-                            musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
-                            musicToggle.style.backgroundColor = 'var(--accent-color)';
-                        }).catch(e => {
-                            console.log("Audio play failed on user interaction");
-                        });
-                        
-                        // Remove event listener after first interaction
-                        document.removeEventListener('click', initAudio);
-                    }
+                    weddingAudio.volume = 0.25;
+                    weddingAudio.play().then(() => {
+                        console.log("Music started on user interaction");
+                    }).catch(e => {
+                        console.log("Audio play failed on user interaction");
+                    });
+                    
+                    // Remove event listener after first interaction
+                    document.removeEventListener('click', initAudio);
                 }, { once: true });
             }
-            
-            // Toggle music on button click
-            musicToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                
-                if (isPlaying) {
-                    weddingAudio.pause();
-                    musicToggle.innerHTML = '<i class="fas fa-music"></i>';
-                    musicToggle.style.backgroundColor = 'var(--primary-color)';
-                } else {
-                    weddingAudio.play();
-                    musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
-                    musicToggle.style.backgroundColor = 'var(--accent-color)';
-                }
-                isPlaying = !isPlaying;
-            });
         }
     </script>
 </body>

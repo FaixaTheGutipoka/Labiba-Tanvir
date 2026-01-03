@@ -145,16 +145,34 @@
             
             // Button click handler - no delay, no music sign
             startButton.addEventListener('click', function() {
-                // Start music instantly
+                // Set a flag in localStorage to indicate music should play on next page
+                localStorage.setItem('shouldPlayMusic', 'true');
+                
+                // Start music instantly on current page
                 try {
-                    starterAudio.volume = 0.25; // Set volume to 25%
-                    starterAudio.play();
+                    starterAudio.volume = 0.25;
+                    const playPromise = starterAudio.play();
                     
                     // Add visual feedback (quick scale effect)
                     startButton.style.transform = 'scale(0.95)';
                     
-                    // Redirect immediately (no delay)
-                    window.location.href = 'invite card.html';
+                    // Wait a tiny moment for audio to start, then redirect immediately
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            // Audio started successfully, redirect immediately
+                            setTimeout(() => {
+                                window.location.href = 'invite card.html';
+                            }, 100); // Very short delay to ensure audio starts
+                        }).catch(() => {
+                            // If audio fails, still redirect immediately
+                            window.location.href = 'invite card.html';
+                        });
+                    } else {
+                        // Fallback for browsers that don't support promises
+                        setTimeout(() => {
+                            window.location.href = 'invite card.html';
+                        }, 100);
+                    }
                     
                 } catch (error) {
                     console.log("Error starting audio:", error);
